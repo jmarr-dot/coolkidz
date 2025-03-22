@@ -1,10 +1,17 @@
 # coolkidz
 
-This repository is used to collect US-published articles about vaccines.
+This repository is used to collect US-published articles about vaccines. 
+Articles are restricted to pushing date from December 1, 2020 through November 30, 2021.
 
 ## Sputnik News
 
 [sputnikglobe.com](https://sputnikglobe.com/search/?query=vaccine)
+
+On March 22, a search using the keyword 'vaccine' returns 4505 results in the time range 
+we are investigating (and 9180 total). 
+It is unclear how many of the results are articles and how many are podcasts or other 
+media.
+This search lists tags that may help to filter the results.
 
 potential tags
 - keyword: 'Vaccine'
@@ -42,3 +49,20 @@ they may still all be published in the US.
 | Joint Committee on Vaccination and Immunisation (JCVI) | 1 |
 | Russian Introduces First Coronavirus Vaccine | 2 |
 | low-quality vaccine | 2 |
+
+## Install
+
+Python 3.12.3
+
+Create a virtual environment
+- `python -m venv .venv`
+
+Activate the virtual environment
+- in git bash `source .venv/Scripts/activate`
+- in windows powershell `.venv/Scripts/activate`
+
+Install requirements
+- `pip install -r requirements`
+
+Deactivate the environment as needed
+- `deactivate`
