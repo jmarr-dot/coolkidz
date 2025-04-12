@@ -58,9 +58,9 @@ Create a virtual environment
 - `python -m venv .venv`
 
 Activate the virtual environment
-- in git bash `source .venv/Scripts/activate`
-- in windows powershell `.venv/Scripts/activate`
-- in mac  `source venv/bin/activate`
+- in git terminal `source .venv/Scripts/activate`
+- in windows terminals `.venv/Scripts/activate`
+- in mac terminal `source .venv/bin/activate`
 
 Install requirements
 - `pip install -r requirements.txt`
