@@ -60,9 +60,10 @@ Create a virtual environment
 Activate the virtual environment
 - in git bash `source .venv/Scripts/activate`
 - in windows powershell `.venv/Scripts/activate`
+- in mac  `source venv/bin/activate`
 
 Install requirements
-- `pip install -r requirements`
+- `pip install -r requirements.txt`
 
 Deactivate the environment as needed
 - `deactivate`
