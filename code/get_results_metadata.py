@@ -54,4 +54,4 @@ def main():
     # Convert data from dict to pandas dataframe then write as csv
     # NOTE: pandas is not necessary here, this was just a matter of convenience
     df = pd.DataFrame(data_dict)
-    df.to_csv('../data/results_sputnikglobe_20201201_20211130.csv')
+    df.to_csv('../data/results_sputnikglobe_20201201_20211130.csv', index=False)
