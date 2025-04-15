@@ -105,9 +105,9 @@ def main():
 
     # Save results
     if sum(df['text'].isna()) or sum(df['pull_time'].isna()) or sum(df['keywords'].isna()):
-        df.drop('Unnamed: 0', axis=1).to_csv(f'../data/sputnik_partial_results_{time.strftime('%Y_%m_%d_%H%M%S', time.gmtime())}.csv', index=False)
-        df.drop('Unnamed: 0', axis=1).to_csv(f'../data/results_sputnikglobe_temp.csv', index=False)
-        print('[WARNING] Some results were not pulled. Partial results were saved to "../data/sputnik_partial_results_<date>.csv".')
+        df.drop('Unnamed: 0', axis=1).to_csv(f'../temp/sputnik_partial_results_{time.strftime('%Y_%m_%d_%H%M%S', time.gmtime())}.csv', index=False)
+        df.drop('Unnamed: 0', axis=1).to_csv(f'../temp/sputnik_partial_results_latest.csv', index=False)
+        print('[WARNING] Some results were not pulled. Partial results were saved to "../temp/sputnik_partial_results_latest.csv".')
         print('Please run this script again after correcting the errors and setting "from_scratch" to False.')
     else:
         df.drop('Unnamed: 0', axis=1).to_csv(f'../data/sputnik_full_results_{time.strftime('%Y_%m_%d_%H%M%S', time.gmtime())}.csv', index=False)
