@@ -3,7 +3,37 @@
 This repository is used to collect US-published articles about vaccines. 
 Articles are restricted to pushing date from December 1, 2020 through November 30, 2021.
 
-## Sputnik News
+## Getting Started
+
+### Install
+
+Create a virtual environment
+- `python -m venv .venv`
+
+Activate the virtual environment
+- in git terminal `source .venv/Scripts/activate`
+- in windows terminals `.venv/Scripts/activate`
+- in mac terminal `source .venv/bin/activate`
+
+Install requirements
+- `pip install -r requirements.txt`
+
+Deactivate the environment as needed
+- `deactivate`
+
+Note that Python 3.12.3 was used in this repo. 
+Much older versions are probably sufficient.
+
+### Running the Scraper
+
+1. Open `code/get_full_sputnik_results.py`. 
+2. Set `from_scratch` to `True` or `False`:
+    - Set `from_scratch` to `True` if you want to try to pull all urls from scratch. 
+    - Set `from_scratch` to `False` if you want to continue an earlier pull with partial results.
+3. In a terminal window, run `python code/get_full_sputnik_results.py`.
+4. Final resuults will be saved to `../data/sputnik_full_results_<date>.csv`
+
+## Background on Sputnik News
 
 [sputnikglobe.com](https://sputnikglobe.com/search/?query=vaccine)
 
@@ -49,21 +79,3 @@ they may still all be published in the US.
 | Joint Committee on Vaccination and Immunisation (JCVI) | 1 |
 | Russian Introduces First Coronavirus Vaccine | 2 |
 | low-quality vaccine | 2 |
-
-## Install
-
-Python 3.12.3
-
-Create a virtual environment
-- `python -m venv .venv`
-
-Activate the virtual environment
-- in git terminal `source .venv/Scripts/activate`
-- in windows terminals `.venv/Scripts/activate`
-- in mac terminal `source .venv/bin/activate`
-
-Install requirements
-- `pip install -r requirements.txt`
-
-Deactivate the environment as needed
-- `deactivate`

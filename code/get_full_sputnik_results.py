@@ -12,17 +12,18 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 
+# If you want to start from a previous incomplete pull, set from_scratch to false
 from_scratch = True
 
 # Get urls
-if from_scratch:
+if from_scratch: # Create a brand new df
     df = pd.read_csv('../data/results_sputnikglobe_20201201_20211130.csv')
     df['text'] = None
     df['pull_time'] = None
     df['keywords'] = None
     df['analytics_keywords'] = None
-else:
-    df = pd.read_csv('../data/results_sputnikglobe_temp.csv')
+else: # Read in the latest partial results from a previous pull
+    df = pd.read_csv('/temp/sputnik_partial_results_latest.csv')
 
 # Set sleep times
 mu, sigma = 0.5, 1. # mean and standard deviation
@@ -65,31 +66,49 @@ def main():
     # filter out the urls that have successfully been pulled already and store in temporary dataframe
     temp_df = df.loc[(df['text'].isna()) | (df['pull_time'].isna()) | (df['keywords'].isna()) | (df['analytics_keywords'].isna())]
 
-    # on by one, visit site, pull source, and store tags of interest in the original dataframe
+    # one by one, visit site, pull source, and store tags of interest in the original dataframe
     for i, row_url in enumerate(temp_df['url']):
+        # Get the index of the current url
         df_index = df.loc[df['url']==row_url].index.values[0]
+
+        # Set the pull time to now
         df.at[df_index, 'pull_time'] = time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime())
+
+        # Try to pull the html from the url
         try:
             driver.get(row_url)
+        # If page is unreachable, fill in all cells saying so, restart the driver, then skip to the next url
         except WebDriverException as e:
             df.at[df_index, 'text'] = f'[ERROR] The url is not reachable at this time.'
             df.at[df_index, 'keywords'] = f'[ERROR] The url is not reachable at this time.'
             df.at[df_index, 'analytics_keywords'] = f'[ERROR] The url is not reachable at this time.'
             driver = refresh_driver(driver=driver, e=e)
             continue
+
+        # Convert the html into "soup" for parsing
         soup = BeautifulSoup(driver.page_source)
+
+        # Get keywords from soup
         url_keywords = soup.find(name='meta', attrs={'name':'keywords'})
         if url_keywords:
             df.at[df_index, 'keywords'] = url_keywords['content']
         else:
             df.at[df_index, 'keywords'] = 'No keywords found.'
+
+        # Get analytics keywords from soup
         url_analytics_keywords = soup.find(name='meta', attrs={'name':'analytics:keyw'})
         if url_analytics_keywords:
             df.at[df_index, 'analytics_keywords'] = url_analytics_keywords['content']
         else:
             df.at[df_index, 'analytics_keywords'] = 'No analytics keywords found.'
+
+        # Get text header from soup
         text_header = soup.find(name='div', attrs={'class':'article__announce-text'})
+
+        # Get text body from soup
         text_body = soup.find(name='div', attrs={'class':'article__body'})
+
+        # Join text header with text body if header exists
         if text_header:
             text = text_header.text
         else:
@@ -97,18 +116,24 @@ def main():
         if text_body:
             text += text_body.text
         df.at[df_index, 'text'] = text
+
+        # print progress ever 300 urls
         if i%300 == 0:
             print(f'{round(i/temp_df.shape[0]*100)}% of {temp_df.shape[0]} completed...')
             driver = refresh_driver(driver=driver)
+        
+        # As a precaution, sleep variable amount of time 
         time.sleep(s[i])
     driver.quit()
 
     # Save results
+    #If there are missing results, save in the temp folder and report that results are missing
     if sum(df['text'].isna()) or sum(df['pull_time'].isna()) or sum(df['keywords'].isna()):
         df.drop('Unnamed: 0', axis=1).to_csv(f'../temp/sputnik_partial_results_{time.strftime('%Y_%m_%d_%H%M%S', time.gmtime())}.csv', index=False)
         df.drop('Unnamed: 0', axis=1).to_csv(f'../temp/sputnik_partial_results_latest.csv', index=False)
         print('[WARNING] Some results were not pulled. Partial results were saved to "../temp/sputnik_partial_results_latest.csv".')
         print('Please run this script again after correcting the errors and setting "from_scratch" to False.')
+    # If no results are missing, save in the data folder
     else:
         df.drop('Unnamed: 0', axis=1).to_csv(f'../data/sputnik_full_results_{time.strftime('%Y_%m_%d_%H%M%S', time.gmtime())}.csv', index=False)
         print('[SUCCESS] Results were saved to "../data/sputnik_full_results_<date>.csv".')
