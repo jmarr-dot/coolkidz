@@ -14,6 +14,8 @@ from selenium.common.exceptions import WebDriverException
 
 # If you want to start from a previous incomplete pull, set from_scratch to false
 from_scratch = True
+## JMP: is this used to loop through 250 row limit in addition to looping through failed webdriver exception,
+## or is the 250 limit only for article text?
 
 # Get urls
 if from_scratch: # Create a brand new df
@@ -28,12 +30,14 @@ else: # Read in the latest partial results from a previous pull
 # Set sleep times
 mu, sigma = 0.5, 1. # mean and standard deviation
 s = np.random.lognormal(mu, sigma, df.shape[0])
+## JMP: why is sleep time variable?
 
 # Optionally plot sleep times
 def plot_sleep_times(s=s):
     import matplotlib.pyplot as plt
     count, bins, ignored = plt.hist(s, 600, density=True, align='mid')
 
+## JMP: what is the function being plotted below?
     x = np.linspace(min(bins), max(bins), 10000)
     pdf = (np.exp(-(np.log(x) - mu)**2 / (2 * sigma**2))
         / (x * sigma * np.sqrt(2 * np.pi)))
@@ -62,9 +66,11 @@ def refresh_driver(driver:webdriver.Firefox=None, e:Exception=None):
 def main():
     # Initialize driver
     driver = refresh_driver()
+## JMP: how often does driver have to refresh?
 
     # filter out the urls that have successfully been pulled already and store in temporary dataframe
     temp_df = df.loc[(df['text'].isna()) | (df['pull_time'].isna()) | (df['keywords'].isna()) | (df['analytics_keywords'].isna())]
+## JMP: what is "isna"?
 
     # one by one, visit site, pull source, and store tags of interest in the original dataframe
     for i, row_url in enumerate(temp_df['url']):
@@ -103,6 +109,7 @@ def main():
             df.at[df_index, 'analytics_keywords'] = 'No analytics keywords found.'
 
         # Get text header from soup
+## JMP: can we go through a page's html together to learn how to identify these components?
         text_header = soup.find(name='div', attrs={'class':'article__announce-text'})
 
         # Get text body from soup
@@ -114,20 +121,24 @@ def main():
         else:
             text = ''
         if text_body:
+## JMP: what is += ?
             text += text_body.text
         df.at[df_index, 'text'] = text
 
         # print progress ever 300 urls
+## JMP: is 300 an arbitrary value?
         if i%300 == 0:
             print(f'{round(i/temp_df.shape[0]*100)}% of {temp_df.shape[0]} completed...')
             driver = refresh_driver(driver=driver)
         
-        # As a precaution, sleep variable amount of time 
+        # As a precaution, sleep variable amount of time
+## JMP: does driver time-out after going to sleep or can you "wake" (restart) a sleeping driver?
         time.sleep(s[i])
     driver.quit()
 
     # Save results
     #If there are missing results, save in the temp folder and report that results are missing
+## JMP: how can temp folder be accessed?
     if sum(df['text'].isna()) or sum(df['pull_time'].isna()) or sum(df['keywords'].isna()):
         df.drop('Unnamed: 0', axis=1).to_csv(f'../temp/sputnik_partial_results_{time.strftime('%Y_%m_%d_%H%M%S', time.gmtime())}.csv', index=False)
         df.drop('Unnamed: 0', axis=1).to_csv(f'../temp/sputnik_partial_results_latest.csv', index=False)
