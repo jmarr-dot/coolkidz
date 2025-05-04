@@ -55,6 +55,8 @@ potential tags
 
 Filtering by tag and keyword gives many results. 
 These results were returned on March 16, 2025. 
+## JMP: does this mean that the sputnik results .csv file in that data folder includes other media (e.g., podcasts) or is it filtered to only have articles?
+
 Note:
 - Results may include articles and other media (e.g., podcasts)
 - The results across keywords may be duplicated. 
